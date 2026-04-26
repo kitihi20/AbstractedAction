@@ -20,8 +20,17 @@ public class Attacker : MonoBehaviour
         blast
     }
 
+    int id;
+
+    void Awake()
+    {
+        id = Random.Range(0, 999999999);
+    }
+
     public Vector3 GetPosition() { return transform.position; }
-    
+    public int GetID() { return id; }
+
+
     public int GetDamage() { return damage; }
     public float GetCoolTime() { return coolTime; }
     public TargetType GetTarget() { return targetType; }

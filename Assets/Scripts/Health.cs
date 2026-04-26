@@ -3,21 +3,118 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    List<DamageHistory> histories;
+    [SerializeField] HealthType healthType;
+    [SerializeField] int health = 100;
 
-    struct DamageHistory
+    public enum HealthType
     {
-        float damage;
-        float cooltime;
+        player,
+        enemy,
     }
 
-    void Start()
+    float dtime;
+
+    int health_now;
+
+    Dictionary<int,DamageHistory> histories;
+
+    class DamageHistory
     {
-        histories = new List<DamageHistory>(32);
+        public DamageHistory(int damage, float coolTime)
+        {
+            this.damage = damage;
+            this.cooltime = coolTime;
+        }
+
+        public int damage;
+        public float cooltime;
     }
 
-    public int Damage(int damage, int coolTime)
+    void Awake()
     {
-        return 0;
+        histories = new Dictionary<int,DamageHistory>(32);
+        health_now = health;
+    }
+
+    void Update()
+    {
+        dtime = Time.deltaTime;
+
+        foreach(int k in histories.Keys)
+        {
+            histories[k].cooltime -= dtime;
+            if(histories[k].cooltime <= 0)
+            {
+                histories.Remove(k);
+                continue;
+            }
+        }
+    }
+
+    public bool ExaminingAttackerTypes(Attacker a)
+    {
+        switch(healthType)
+        {
+            case HealthType.player:
+                if(a.GetTarget() != Attacker.TargetType.enemy)
+                {
+                    return true;
+                }
+            break;
+            case HealthType.enemy:
+                if(a.GetTarget() != Attacker.TargetType.player)
+                {
+                    return true;
+                }
+            break;
+        }
+        return false;
+    }
+
+    public void Damage(int id, int damage, float coolTime)
+    {
+        if(histories.ContainsKey(id))
+        {
+            return;
+        }
+        histories.Add(id, new DamageHistory(damage, coolTime));
+        health_now -= damage;
+
+        if(health_now <= 0)
+        {
+            health_now = 0;
+            Death();
+        }
+        return;
+    }
+
+    public void Death()
+    {
+        
+    }
+
+
+    void OnTriggerEnter(Collider other)
+    {
+        Attacker a = other.GetComponent<Attacker>();
+        if(a)
+        {
+            if(ExaminingAttackerTypes(a))
+            {
+                Damage(a.GetID(), a.GetDamage(), a.GetCoolTime());
+            }
+        }
+    }
+
+    void OnParticleCollision(GameObject other)
+    {
+        Attacker a = other.GetComponent<Attacker>();
+        if(a)
+        {
+            if(ExaminingAttackerTypes(a))
+            {
+                Damage(a.GetID(), a.GetDamage(), a.GetCoolTime());
+            }
+        }
     }
 }
