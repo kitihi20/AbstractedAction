@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,9 +13,15 @@ public class Health : MonoBehaviour
         enemy,
     }
 
-    float dtime;
+    //public delegate void DamageDelegate(int damage);
+    public delegate void DeathDelegate();
+
+    public bool isDead { private set; get; }
 
     int health_now;
+    float healthCheckedTime;
+    //DamageDelegate damageDelegate;
+    DeathDelegate deathDelegate;
 
     Dictionary<int,DamageHistory> histories;
 
@@ -22,28 +29,34 @@ public class Health : MonoBehaviour
     {
         public DamageHistory(int damage, float coolTime)
         {
+            this.hitTime = Time.timeSinceLevelLoad;
             this.damage = damage;
             this.cooltime = coolTime;
         }
 
-        public int damage;
-        public float cooltime;
+
+        public float hitTime { get; private set;}
+        public int damage { get; private set;}
+        public float cooltime { get; private set;}
     }
 
     void Awake()
     {
         histories = new Dictionary<int,DamageHistory>(32);
+        isDead = false;
         health_now = health;
+        healthCheckedTime = -1;
     }
 
-    void Update()
+
+    void CheckDamageHistories()
     {
-        dtime = Time.deltaTime;
+        if(healthCheckedTime >= Time.timeSinceLevelLoad) { return; }
+        healthCheckedTime = Time.timeSinceLevelLoad;
 
         foreach(int k in histories.Keys)
         {
-            histories[k].cooltime -= dtime;
-            if(histories[k].cooltime <= 0)
+            if(histories[k].hitTime + histories[k].cooltime <= healthCheckedTime)
             {
                 histories.Remove(k);
                 continue;
@@ -71,26 +84,66 @@ public class Health : MonoBehaviour
         return false;
     }
 
-    public void Damage(int id, int damage, float coolTime)
+    public void Damage(int id, int damage, float cooltime)
     {
-        if(histories.ContainsKey(id))
-        {
-            return;
-        }
-        histories.Add(id, new DamageHistory(damage, coolTime));
+        if(isDead) { return; }
+
+        CheckDamageHistories();
+
+        if(histories.ContainsKey(id)) { return; }
+
         health_now -= damage;
 
         if(health_now <= 0)
         {
             health_now = 0;
             Death();
+            return;
         }
+
+        //damageDelegate?.Invoke(damage);
+
+        if(cooltime > 0)
+        {
+            histories.Add(id, new DamageHistory(damage, cooltime));
+        }
+
         return;
     }
 
     public void Death()
     {
-        
+        isDead = true;
+        enabled = false;
+        deathDelegate?.Invoke();
+    }
+
+    /*public void AddDelegate_Damage(DamageDelegate d)
+    {
+        damageDelegate += d;
+    }
+    public void RemoveDelegate_Damage(DamageDelegate d)
+    {
+        damageDelegate -= d;
+    }*/
+
+    public void AddDelegate_Death(DeathDelegate d)
+    {
+        deathDelegate += d;
+    }
+    public void RemoveDelegate_Death(DeathDelegate d)
+    {
+        deathDelegate -= d;
+    }
+
+
+    public int GetMaxHealth()
+    {
+        return health;
+    }
+    public int GetNowHealth()
+    {
+        return health_now;
     }
 
 
