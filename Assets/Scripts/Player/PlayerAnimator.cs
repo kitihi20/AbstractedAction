@@ -7,7 +7,7 @@ public class PlayerAnimator : MonoBehaviour
     int ComboNum;
     float ComboTime;
 
-    int hash_Move;
+
     int hash_Dodge;
     int hash_Attack1;
 
@@ -16,7 +16,6 @@ public class PlayerAnimator : MonoBehaviour
         ComboNum = 0;
         ComboTime = 0;
 
-        hash_Move = Animator.StringToHash("Move");
         hash_Dodge = Animator.StringToHash("Dodge");
         hash_Attack1 = Animator.StringToHash("Attack1");
     }
@@ -26,18 +25,13 @@ public class PlayerAnimator : MonoBehaviour
         
     }
 
-    public void Animate_Move()
-    {
-        
-    }
-
     public void Animate_Dodge()
     {
-        
+        animator.SetTrigger(hash_Dodge);
     }
 
     public void Animate_Attack()
     {
-        
+        animator.SetTrigger(hash_Attack1);
     }
 }

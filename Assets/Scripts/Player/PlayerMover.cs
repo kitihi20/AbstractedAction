@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class PlayerMover : MonoBehaviour
 {
-    [SerializeField] float move_time = 0.3f;
     [SerializeField] AnimationCurve move_curve;
 
     float dtime;
@@ -10,6 +9,7 @@ public class PlayerMover : MonoBehaviour
     Vector3 movepos;
     Quaternion rot;
 
+    float move_time;
     float move_time_now;
     Vector3 move_startpos;
     Vector3 move_targetpos;
@@ -56,9 +56,10 @@ public class PlayerMover : MonoBehaviour
         transform.rotation = rot;
     }
 
-    public void Move(Vector3 pos)
+    public void Move(Vector3 pos, float time)
     {
-        move_time_now = move_time;
+        move_time = time;
+        move_time_now = time;
         move_startpos = transform.position;
         move_targetpos = pos;
     }
@@ -66,5 +67,10 @@ public class PlayerMover : MonoBehaviour
     public void LookAt(Transform tra)
     {
         lookAt_Tra = tra;
+    }
+
+    public float GetTargetSQRDist(Vector3 pos)
+    {
+        return (transform.position - pos).sqrMagnitude;
     }
 }

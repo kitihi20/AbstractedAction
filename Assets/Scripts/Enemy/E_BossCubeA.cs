@@ -1,16 +1,33 @@
 using UnityEngine;
 
-public class E_BossCubeA : MonoBehaviour
+public class E_BossCubeA : Enemy
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+
+
+    protected override void E_Start()
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void E_Update(float dtime)
     {
         
+    }
+
+    protected override void E_Death()
+    {
+        
+    }
+
+
+
+    public override Vector3 GetPosition()
+    {
+        return transform.position;
+    }
+
+    public override Transform GetTransform()
+    {
+        return transform;
     }
 }

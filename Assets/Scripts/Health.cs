@@ -16,10 +16,13 @@ public class Health : MonoBehaviour
     //public delegate void DamageDelegate(int damage);
     public delegate void DeathDelegate();
 
+    //public bool isInvincible { set; get; }
     public bool isDead { private set; get; }
 
-    int health_now;
+    [SerializeField] int health_now;
     float healthCheckedTime;
+    float invincible_time_start;
+    float invincible_time;
     //DamageDelegate damageDelegate;
     DeathDelegate deathDelegate;
 
@@ -54,11 +57,14 @@ public class Health : MonoBehaviour
         if(healthCheckedTime >= Time.timeSinceLevelLoad) { return; }
         healthCheckedTime = Time.timeSinceLevelLoad;
 
-        foreach(int k in histories.Keys)
+        int[] keys = new int[histories.Keys.Count];
+        histories.Keys.CopyTo(keys, 0);
+
+        for(int i = keys.Length-1; i > 0; i--)
         {
-            if(histories[k].hitTime + histories[k].cooltime <= healthCheckedTime)
+            if(histories[keys[i]].hitTime + histories[keys[i]].cooltime <= healthCheckedTime)
             {
-                histories.Remove(k);
+                histories.Remove(keys[i]);
                 continue;
             }
         }
@@ -86,6 +92,7 @@ public class Health : MonoBehaviour
 
     public void Damage(int id, int damage, float cooltime)
     {
+        if(invincible_time_start + invincible_time >= Time.timeSinceLevelLoad) { return; }
         if(isDead) { return; }
 
         CheckDamageHistories();
@@ -116,6 +123,18 @@ public class Health : MonoBehaviour
         isDead = true;
         enabled = false;
         deathDelegate?.Invoke();
+    }
+
+    public void SetInvincibleTime(float time)
+    {
+        if(time < 0)
+        {
+            invincible_time_start = -1;
+            invincible_time = 0;
+            return;
+        }
+        invincible_time_start = Time.timeSinceLevelLoad;
+        invincible_time = time;
     }
 
     /*public void AddDelegate_Damage(DamageDelegate d)
@@ -154,6 +173,8 @@ public class Health : MonoBehaviour
         {
             if(ExaminingAttackerTypes(a))
             {
+                a.Hit(other.ClosestPoint(a.GetPosition()));
+
                 Damage(a.GetID(), a.GetDamage(), a.GetCoolTime());
             }
         }

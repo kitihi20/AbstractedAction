@@ -6,6 +6,7 @@ public class Attacker : MonoBehaviour
     [SerializeField] float coolTime = 0;
     [SerializeField] TargetType targetType;
     [SerializeField] AttackType attackType;
+    [SerializeField] ParticleSystem hitParticle;
 
     public enum TargetType
     {
@@ -25,6 +26,12 @@ public class Attacker : MonoBehaviour
     void Awake()
     {
         id = Random.Range(0, 999999999);
+    }
+
+    public void Hit(Vector3 pos)
+    {
+        hitParticle.transform.position = pos;
+        hitParticle.Play();
     }
 
     public Vector3 GetPosition() { return transform.position; }

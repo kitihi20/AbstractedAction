@@ -8,6 +8,8 @@ public class EnemiesManager : MonoBehaviour
     [SerializeField] int maxCommonEnemyCount = 128;
     [SerializeField] int maxBossEnemyCount = 4;
 
+    [SerializeField] Enemy[] firstEnemies;
+
     N2M4_EnemyList commonEnemys;
     //N2M4_EnemyList bossEnemys;// 今のところは分ける必要が無い
 
@@ -20,6 +22,16 @@ public class EnemiesManager : MonoBehaviour
 
         commonEnemys = new N2M4_EnemyList(maxCommonEnemyCount);
         //bossEnemys = new N2M4_EnemyList(maxBossEnemyCount);
+    }
+
+    void Start()
+    {
+        for(int i = 0; i < firstEnemies.Length; ++i)
+        {
+            if(!firstEnemies[i]){ continue; }
+            firstEnemies[i].E_A_Start();
+            commonEnemys.Add(firstEnemies[i]);
+        }
     }
 
     void Update()
