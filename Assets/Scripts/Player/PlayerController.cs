@@ -35,41 +35,43 @@ public class PlayerController : MonoBehaviour
             lookAt2D.LookAt(enemytra);
         }
 
-        if(input.dodge_down)
-        {
-            Dodge();
-        }
-        if(input.attack_down)
-        {
-            Attack();
-        }
+        Dodge();
+        Attack();
     }
 
     void Dodge()
     {
-        float rand = (Random.Range(0, 2) == 0) ? 1 : -1;
-        Vector3 dodgePos = mover.transform.position + lookAt2D.right * 5 * rand;
+        if(input.dodge_down)
+        {
+            float rand = (Random.Range(0, 2) == 0) ? 1 : -1;
+            Vector3 dodgePos = mover.transform.position + lookAt2D.right * 5 * rand;
 
-        mover.Move(dodgePos, dodge_movetime);
-        animator.Animate_Dodge();
-        health.SetInvincibleTime(dodge_movetime);
+            mover.Move(dodgePos, dodge_movetime);
+            animator.Animate_Dodge();
+            health.SetInvincibleTime(dodge_movetime);
+        }
     }
 
     void Attack()
     {
-        if(enemytra)
+        if(input.attack_down)
         {
-            Vector3 AttackPos = enemytra.position + lookAt2D.forward * -3;
-            float sqrDist = mover.GetTargetSQRDist(AttackPos);
-            if(sqrDist > 0.1f)
+            if(enemytra)
             {
-                mover.Move(AttackPos, attack_movetime);
-                animator.Animate_Dodge();
-                health.SetInvincibleTime(attack_movetime);
-            }else
-            {
-                //Attack
-                animator.Animate_Attack();
+                Vector3 AttackPos = enemytra.position + lookAt2D.forward * -3;
+                float sqrDist = mover.GetTargetSQRDist(AttackPos);
+                if(sqrDist > 0.1f)
+                {
+                    mover.Move(AttackPos, attack_movetime);
+                    health.SetInvincibleTime(attack_movetime);
+
+                    animator.Animate_Dodge();
+                    animator.Animate_MoveAttack();
+                }else
+                {
+                    //Attack
+                    animator.Animate_Attack();
+                }
             }
         }
     }
