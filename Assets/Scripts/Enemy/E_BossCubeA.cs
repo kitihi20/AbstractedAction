@@ -1,5 +1,16 @@
 using UnityEngine;
 
+//
+
+/*
+ギミック案
+避けやすい攻撃 > 隙が大きい攻撃
+- タケノコ、単独・連続
+- レーザー、単独・連続
+- ゲロビ
+- 
+*/
+
 public class E_BossCubeA : Enemy
 {
 

@@ -30,8 +30,11 @@ public class Attacker : MonoBehaviour
 
     public void Hit(Vector3 pos)
     {
-        hitParticle.transform.position = pos;
-        hitParticle.Play();
+        if(hitParticle)
+        {
+            hitParticle.transform.position = pos;
+            hitParticle.Play();
+        }
     }
 
     public Vector3 GetPosition() { return transform.position; }

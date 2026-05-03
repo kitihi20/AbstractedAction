@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] LayerMask enemyLayer;
 
-    [SerializeField] Transform firstEnemy;
+    [SerializeField] Enemy firstEnemy;
     [SerializeField] Transform lookAt2D;
 
     [SerializeField] PlayerInput input;
@@ -15,9 +15,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] PlayerCamera cam;
     [SerializeField] PlayerMover mover;
     [SerializeField] PlayerAnimator animator;
+    [SerializeField] PlayerGameUI gameUI;
     [SerializeField] Health health;
 
     RaycastHit hit;
+    Enemy enemy;
     Transform enemytra;
 
     void Start()
@@ -76,10 +78,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void SetEnemy(Transform tra)
+    void SetEnemy(Enemy e)
     {
-        enemytra = tra;
+        enemy = e;
+        enemytra = e.GetTransform();
+
         cam.LookAt(enemytra);
         mover.LookAt(enemytra);
+
+        gameUI.SetEnemy(e);
     }
 }
