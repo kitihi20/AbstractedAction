@@ -12,6 +12,7 @@ public abstract class Enemy : MonoBehaviour
 
 
     public abstract Vector3 GetPosition();
+    public abstract Vector3 GetCenterPosition();
     public abstract Transform GetTransform();
 
     //

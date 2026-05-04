@@ -13,16 +13,42 @@ using UnityEngine;
 
 public class E_BossCubeA : Enemy
 {
+    [SerializeField] Transform enemyTra;
+    [SerializeField] Transform enemyCenterTra;
 
+    [SerializeField] GameObject takenoko1Prefab;
+    [SerializeField] GameObject mLazerPrefab;
+
+    float attacktime;
+
+    Vector3 playerPos;
 
     protected override void E_Start()
     {
-        
+        attacktime = 0;
     }
 
     protected override void E_Update(float dtime)
     {
-        
+        attacktime -= dtime;
+
+        playerPos = PlayerController.instance.GetPosition();
+
+        if(attacktime <= 0)
+        {
+            int rand = Random.Range(0,2);
+            switch(rand)
+            {
+                case 1:
+                    Attack_MLazer();
+                    attacktime = 4f;
+                break;
+                default:
+                    Attack_Takenoko_1();
+                    attacktime = 1.5f;
+                break;
+            }
+        }
     }
 
     protected override void E_Death()
@@ -31,14 +57,30 @@ public class E_BossCubeA : Enemy
     }
 
 
+    void Attack_Takenoko_1()
+    {
+        Instantiate(takenoko1Prefab, playerPos, Quaternion.Euler(new Vector3(-90, 0, 0)));
+    }
+
+    void Attack_MLazer()
+    {
+        Vector3 shotvec = (playerPos - GetPosition()).normalized;
+        Vector3 shotpos = GetPosition() + new Vector3(0, 2.5f, 0) + shotvec * 2f;
+        Instantiate(mLazerPrefab, shotpos, Quaternion.LookRotation(shotvec));
+    }
+
 
     public override Vector3 GetPosition()
     {
-        return transform.position;
+        return enemyTra.position;
+    }
+    public override Vector3 GetCenterPosition()
+    {
+        return enemyCenterTra.position;
     }
 
     public override Transform GetTransform()
     {
-        return transform;
+        return enemyTra;
     }
 }

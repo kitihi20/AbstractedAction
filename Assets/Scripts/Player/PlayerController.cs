@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController instance { get; private set; }
+
     [SerializeField] float dodge_movetime = 0.4f;
     [SerializeField] float attack_movetime = 0.2f;
 
@@ -22,9 +24,16 @@ public class PlayerController : MonoBehaviour
     Enemy enemy;
     Transform enemytra;
 
+    void Awake()
+    {
+        instance = this;
+    }
+
     void Start()
     {
         SetEnemy(firstEnemy);
+
+        gameUI.SetPlayerHealth(health);
 
         cam.SetFollower(mover.transform);
     }
@@ -87,5 +96,10 @@ public class PlayerController : MonoBehaviour
         mover.LookAt(enemytra);
 
         gameUI.SetEnemy(e);
+    }
+
+    public Vector3 GetPosition()
+    {
+        return lookAt2D.position;
     }
 }

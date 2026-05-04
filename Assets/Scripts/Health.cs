@@ -166,7 +166,7 @@ public class Health : MonoBehaviour
     }
 
 
-    void OnTriggerEnter(Collider other)
+    void OnTriggerStay(Collider other)
     {
         Attacker a = other.GetComponent<Attacker>();
         if(a)

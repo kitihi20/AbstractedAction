@@ -4,6 +4,7 @@ public class Attacker : MonoBehaviour
 {
     [SerializeField] int damage = 10;
     [SerializeField] float coolTime = 0;
+    [SerializeField] bool enableToOtherAttackID = false;
     [SerializeField] TargetType targetType;
     [SerializeField] AttackType attackType;
     [SerializeField] ParticleSystem hitParticle;
@@ -25,7 +26,15 @@ public class Attacker : MonoBehaviour
 
     void Awake()
     {
-        id = Random.Range(0, 999999999);
+        id = Random.Range(int.MinValue, int.MaxValue);
+    }
+
+    void OnEnable()
+    {
+        if(enableToOtherAttackID)
+        {
+            id = Random.Range(int.MinValue, int.MaxValue);
+        }
     }
 
     public void Hit(Vector3 pos)

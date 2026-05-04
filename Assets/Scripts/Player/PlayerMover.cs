@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerMover : MonoBehaviour
 {
     [SerializeField] AnimationCurve move_curve;
+    [SerializeField] Rigidbody rb;
 
     float dtime;
 
@@ -52,8 +53,15 @@ public class PlayerMover : MonoBehaviour
 
     void Update_Confirm()
     {
-        transform.position = movepos;
-        transform.rotation = rot;
+        if(rb)
+        {
+            rb.MovePosition(movepos);
+            rb.MoveRotation(rot);
+        }else
+        {
+            transform.position = movepos;
+            transform.rotation = rot;
+        }
     }
 
     public void Move(Vector3 pos, float time)
