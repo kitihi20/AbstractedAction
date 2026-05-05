@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 //
@@ -15,6 +16,8 @@ public class E_BossCubeA : Enemy
 {
     [SerializeField] Transform enemyTra;
     [SerializeField] Transform enemyCenterTra;
+    [SerializeField] int nextSceneIndex = 2;
+    [SerializeField] ParticleSystem deathParticle;
 
     [SerializeField] GameObject takenoko1Prefab;
     [SerializeField] GameObject mLazerPrefab;
@@ -25,7 +28,7 @@ public class E_BossCubeA : Enemy
 
     protected override void E_Start()
     {
-        attacktime = 0;
+        attacktime = 3f;
     }
 
     protected override void E_Update(float dtime)
@@ -53,9 +56,25 @@ public class E_BossCubeA : Enemy
 
     protected override void E_Death()
     {
-        
+        StartCoroutine(DeathCoroutine());
     }
 
+    IEnumerator DeathCoroutine()
+    {
+        deathParticle.Play();
+
+        TimeController.Instance.SetTimeScale(0.1f);
+
+        yield return new WaitForSecondsRealtime(5);
+
+        TimeController.Instance.SetTimeScale(1f);
+
+        yield return new WaitForSecondsRealtime(4);
+
+        SceneLoader.Instance.LoadScene(nextSceneIndex);
+
+        yield break;
+    }
 
     void Attack_Takenoko_1()
     {
