@@ -22,6 +22,8 @@ public class E_BossCubeA : Enemy
     [SerializeField] GameObject takenoko1Prefab;
     [SerializeField] GameObject mLazerPrefab;
 
+    [SerializeField] Rigidbody[] deathObjs;
+
     float attacktime;
 
     Vector3 playerPos;
@@ -56,6 +58,11 @@ public class E_BossCubeA : Enemy
 
     protected override void E_Death()
     {
+        for(int i = 0; i < deathObjs.Length; ++i)
+        {
+            deathObjs[i].isKinematic = false;
+        }
+        
         StartCoroutine(DeathCoroutine());
     }
 
