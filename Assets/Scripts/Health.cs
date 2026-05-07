@@ -75,13 +75,15 @@ public class Health : MonoBehaviour
         switch(healthType)
         {
             case HealthType.player:
-                if(a.GetTarget() != Attacker.TargetType.enemy)
+                if(a.GetTarget() == Attacker.TargetType.player ||
+                a.GetTarget() == Attacker.TargetType.all)
                 {
                     return true;
                 }
             break;
             case HealthType.enemy:
-                if(a.GetTarget() != Attacker.TargetType.player)
+                if(a.GetTarget() == Attacker.TargetType.enemy ||
+                a.GetTarget() == Attacker.TargetType.all)
                 {
                     return true;
                 }

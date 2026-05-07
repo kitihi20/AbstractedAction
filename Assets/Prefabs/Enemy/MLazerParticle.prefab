@@ -9830,7 +9830,7 @@ GameObject:
   - component: {fileID: 3970394677568208919}
   - component: {fileID: 5892542673404501535}
   - component: {fileID: 1305939696915289552}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: Attacker
   m_TagString: Untagged
   m_Icon: {fileID: 0}

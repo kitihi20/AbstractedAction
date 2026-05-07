@@ -14,12 +14,13 @@ public class Attacker : MonoBehaviour
         all,
         player,
         enemy,
+        none,//攻撃の予測段階での回避に利用
     }
 
     public enum AttackType
     {
         direct,
-        blast
+        blast//爆発系に利用する想定、遮蔽で無効化、現在未実装
     }
 
     int id;

@@ -1,3 +1,5 @@
+
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -54,8 +56,22 @@ public class PlayerController : MonoBehaviour
     {
         if(input.dodge_down)
         {
-            float rand = (Random.Range(0, 2) == 0) ? 1 : -1;
-            Vector3 dodgePos = mover.transform.position + lookAt2D.right * 5 * rand;
+            Vector3 offset = new Vector3(0,0.5f,0);
+            Vector3 plpos = mover.transform.position + offset;
+            Vector3 right = mover.transform.right;
+            Vector3 dodgePos;
+            bool res = SafePositionFinder.TryFindSafePosition(plpos, right, 0.75f, enemyLayer, out dodgePos);
+            if(res)
+            {
+                Debug.Log("move");
+                dodgePos -= offset;
+            }
+            else
+            {
+                Debug.Log("no safe point");
+                float rand = (Random.Range(0, 2) == 0) ? 1 : -1;
+                dodgePos = mover.transform.position + lookAt2D.right * 5 * rand;
+            }
 
             mover.Move(dodgePos, dodge_movetime);
             animator.Animate_Dodge();

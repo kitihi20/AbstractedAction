@@ -21,9 +21,12 @@ public class E_BossCubeA : Enemy
 
     [SerializeField] GameObject takenoko1Prefab;
     [SerializeField] GameObject mLazerPrefab;
+    [SerializeField] GameObject tsuraraPrefab;
 
     [SerializeField] Rigidbody[] deathObjs;
 
+    int attackType;
+    int attackCount;
     float attacktime;
 
     Vector3 playerPos;
@@ -41,20 +44,74 @@ public class E_BossCubeA : Enemy
 
         if(attacktime <= 0)
         {
-            int rand = Random.Range(0,2);
-            switch(rand)
+            if(attackCount <= 0)
             {
-                case 1:
-                    Attack_MLazer();
-                    attacktime = 4f;
-                break;
-                default:
-                    Attack_Takenoko_1();
-                    attacktime = 1.5f;
-                break;
+                NextAttack();
+            }
+            else
+            {
+                Attack();
             }
         }
     }
+
+
+    void NextAttack()
+    {
+        attackType = Random.Range(0,3);
+        switch(attackType)
+        {
+            case 1:
+                attackCount = 1;
+            break;
+            case 2:
+                attackCount = 4;
+            break;
+            default:
+                attackCount = 1;
+            break;
+        }
+
+        Attack();
+    }
+
+    void Attack()
+    {
+        attackCount--;
+
+        switch(attackType)
+        {
+            case 1:
+                Attack_MLazer();
+            break;
+            case 2:
+                Attack_Tsurara();
+            break;
+            default:
+                Attack_Takenoko_1();
+            break;
+        }
+    }
+    void Attack_Takenoko_1()
+    {
+        Instantiate(takenoko1Prefab, playerPos, Quaternion.Euler(new Vector3(-90, 0, 0)));
+        attacktime = 1.5f;
+    }
+
+    void Attack_MLazer()
+    {
+        Vector3 shotvec = (playerPos - GetPosition()).normalized;
+        Vector3 shotpos = GetPosition() + new Vector3(0, 2.5f, 0) + shotvec * 2f;
+        Instantiate(mLazerPrefab, shotpos, Quaternion.LookRotation(shotvec));
+        attacktime = 4f;
+    }
+
+    void Attack_Tsurara()
+    {
+        Instantiate(tsuraraPrefab, playerPos, Quaternion.Euler(new Vector3(-90, 0, 0)));
+        attacktime = 0.5f;
+    }
+
 
     protected override void E_Death()
     {
@@ -81,18 +138,6 @@ public class E_BossCubeA : Enemy
         SceneLoader.Instance.LoadScene(nextSceneIndex);
 
         yield break;
-    }
-
-    void Attack_Takenoko_1()
-    {
-        Instantiate(takenoko1Prefab, playerPos, Quaternion.Euler(new Vector3(-90, 0, 0)));
-    }
-
-    void Attack_MLazer()
-    {
-        Vector3 shotvec = (playerPos - GetPosition()).normalized;
-        Vector3 shotpos = GetPosition() + new Vector3(0, 2.5f, 0) + shotvec * 2f;
-        Instantiate(mLazerPrefab, shotpos, Quaternion.LookRotation(shotvec));
     }
 
 
