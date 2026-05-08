@@ -1,128 +1,50 @@
-using System.Collections.Generic;
 using UnityEngine;
 
-//Gemini製
+//Made by Gemmini
 
 public class SafePositionFinder
 {
-    // メモリ割り当てを避けるためのキャッシュ（最大64個のオブジェクトの接触を想定）
-    private static RaycastHit[] hitsBuffer = new RaycastHit[64];
-    private static List<Vector2> blockedIntervals = new List<Vector2>(64);
-    private static List<Vector2> mergedIntervals = new List<Vector2>(64);
-    private static List<float> candidates = new List<float>(128);
-
     /// <summary>
-    /// プレイヤーの左右の空間から、接触物がなく3m以上離れた最も近い座標を探す
+    /// AABBの肥大化問題を回避し、正確なコライダー形状に基づいて安全な位置を探す
     /// </summary>
-    /// <param name="playerPos">プレイヤーの座標</param>
-    /// <param name="rightDir">プレイヤーの右方向ベクトル（正規化済みであること）</param>
+    /// <param name="playerPos">プレイヤーの初期座標</param>
+    /// <param name="rightDir">プレイヤーの右方向ベクトル</param>
     /// <param name="playerRadius">プレイヤーの半径（0.5m）</param>
     /// <param name="obstacleMask">障害物として判定するレイヤーマスク</param>
-    /// <param name="resultPos">見つかった座標（見つからなかった場合は初期座標）</param>
+    /// <param name="resultPos">見つかった座標</param>
     /// <returns>条件を満たす地点が見つかれば true</returns>
-    public static bool TryFindSafePosition(Vector3 playerPos, Vector3 rightDir, float playerRadius, LayerMask obstacleMask, out Vector3 resultPos)
+    public static bool TryFindSafePositionAccurate(Vector3 playerPos, Vector3 rightDir, float playerRadius, LayerMask obstacleMask, out Vector3 resultPos)
     {
         resultPos = playerPos;
         
-        float searchLeft = -40f;
-        float searchRight = 40f; // 左20m地点から右へ40mなので、プレイヤー基準で[-20, 20]
-        float minDistance = 5f;  // 3m以上離れる
-        float totalCastDistance = searchRight - searchLeft; // 40f
+        float searchMax = 20f;   // 最大探索距離（左右20m）
+        float minDistance = 3f;  // 最小距離（3m以上離れる）
+        
+        // 探索のステップ幅（0.25m刻み。半径0.5mの球がすり抜けない十分な精度）
+        float step = 0.25f;      
 
-        // キャッシュのクリア
-        blockedIntervals.Clear();
-        mergedIntervals.Clear();
-        candidates.Clear();
-
-        // 1. 左20m地点から右に向かって SphereCastNonAlloc を実行
-        Vector3 castStartPos = playerPos + rightDir * searchLeft;
-        int hitCount = Physics.SphereCastNonAlloc(castStartPos, playerRadius, rightDir, hitsBuffer, totalCastDistance, obstacleMask, QueryTriggerInteraction.Collide);
-
-        // 2. 接触したコライダーの Bounds を1Dの線分区間に射影する
-        for (int i = 0; i < hitCount; i++)
+        // 3m地点から20m地点まで、内側から外側へ向かって探索
+        for (float t = minDistance; t <= searchMax; t += step)
         {
-            Bounds bounds = hitsBuffer[i].collider.bounds;
-
-            // Boundsの「中心」と「広がり(Extents)」を rightDir 軸上に射影
-            float centerProj = Vector3.Dot(bounds.center - playerPos, rightDir);
-            float extentsProj = bounds.extents.x * Mathf.Abs(rightDir.x) + 
-                                bounds.extents.y * Mathf.Abs(rightDir.y) + 
-                                bounds.extents.z * Mathf.Abs(rightDir.z);
-
-            // プレイヤーの半径と安全のための微小なバッファを加味した「進入不可区間」を記録
-            float buffer = playerRadius + 0.01f; 
-            blockedIntervals.Add(new Vector2(centerProj - extentsProj - buffer, centerProj + extentsProj + buffer));
-        }
-
-        // 3. 進入不可区間（Interval）をマージする
-        if (blockedIntervals.Count > 0)
-        {
-            blockedIntervals.Sort((a, b) => a.x.CompareTo(b.x));
-            Vector2 current = blockedIntervals[0];
-
-            for (int i = 1; i < blockedIntervals.Count; i++)
+            // --- 右側の判定 ---
+            Vector3 rightPos = playerPos + rightDir * t;
+            // CheckSphereは「接触していればtrue」を返すため、!で反転（接触していなければ安全）
+            if (!Physics.CheckSphere(rightPos, playerRadius, obstacleMask, QueryTriggerInteraction.Collide))
             {
-                if (blockedIntervals[i].x <= current.y)
-                {
-                    current.y = Mathf.Max(current.y, blockedIntervals[i].y);
-                }
-                else
-                {
-                    mergedIntervals.Add(current);
-                    current = blockedIntervals[i];
-                }
+                resultPos = rightPos;
+                return true; // 見つかった瞬間に処理を終了（超軽量）
             }
-            mergedIntervals.Add(current);
-        }
 
-        // 4. 配置可能な候補地点のリストアップ
-        // 初期候補: プレイヤーから正確に左右3mの地点
-        candidates.Add(minDistance);
-        candidates.Add(-minDistance);
-
-        // その他の候補: 障害物の境界線のすぐ外側
-        foreach (var interval in mergedIntervals)
-        {
-            if (interval.y >= minDistance && interval.y <= searchRight) candidates.Add(interval.y);
-            if (interval.x <= -minDistance && interval.x >= searchLeft) candidates.Add(interval.x);
-        }
-
-        // 5. 候補地点の中から、「どの進入不可区間にも属していない」かつ「最も近い」地点を選ぶ
-        float bestT = float.MaxValue;
-        bool found = false;
-
-        foreach (float t in candidates)
-        {
-            // 条件: 探査範囲内であり、3m以上離れていること
-            if (t >= searchLeft && t <= searchRight && Mathf.Abs(t) >= minDistance)
+            // --- 左側の判定 ---
+            Vector3 leftPos = playerPos + rightDir * (-t);
+            if (!Physics.CheckSphere(leftPos, playerRadius, obstacleMask, QueryTriggerInteraction.Collide))
             {
-                bool isBlocked = false;
-                foreach (var interval in mergedIntervals)
-                {
-                    // 進入不可区間の「内側」にある場合はNG
-                    if (t > interval.x && t < interval.y)
-                    {
-                        isBlocked = true;
-                        break;
-                    }
-                }
-
-                // ブロックされておらず、かつ今までの候補より近ければ更新
-                if (!isBlocked && Mathf.Abs(t) < Mathf.Abs(bestT))
-                {
-                    bestT = t;
-                    found = true;
-                }
+                resultPos = leftPos;
+                return true; // 見つかった瞬間に処理を終了
             }
         }
 
-        // 6. 結果の返却
-        if (found)
-        {
-            resultPos = playerPos + rightDir * bestT;
-            return true;
-        }
-
+        // 左右20mを探しても空きスペースが無かった場合
         return false;
     }
 }

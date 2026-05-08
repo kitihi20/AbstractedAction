@@ -5598,7 +5598,6 @@ MonoBehaviour:
   playerHealth_gauge: {fileID: 1453891404}
   enemyHealth_gauge: {fileID: 1346862969}
   enemyHealth_Name: {fileID: 788885546}
-  gameoverObj: {fileID: 614377989}
 --- !u!1 &176493589
 GameObject:
   m_ObjectHideFlags: 0
@@ -5611,7 +5610,6 @@ GameObject:
   - component: {fileID: 176493593}
   - component: {fileID: 176493592}
   - component: {fileID: 176493591}
-  - component: {fileID: 176493594}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -5683,19 +5681,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 176493592}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 176493594}
-        m_TargetAssemblyTypeName: UI_LoadSceneButton, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &176493592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5734,19 +5720,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 176493589}
   m_CullTransparentMesh: 1
---- !u!114 &176493594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 176493589}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 256a0f533ea204a4a9e5c01076a35d50, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UI_LoadSceneButton
-  sceneIndex: 0
 --- !u!1 &180739610
 GameObject:
   m_ObjectHideFlags: 0
@@ -7217,12 +7190,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   dodge_movetime: 0.3
   attack_movetime: 0.2
-  lookAt2D: {fileID: 941674531}
-  deathParticle: {fileID: 1475595439}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 256
   firstEnemy: {fileID: 1631867140}
+  lookAt2D: {fileID: 941674531}
   input: {fileID: 838733153}
   cam: {fileID: 1982036240}
   mover: {fileID: 383697649}
@@ -9485,12 +9457,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 586555147}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.16, y: 1.5, z: -0.61}
   m_LocalScale: {x: 5, y: 5, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1509256570}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &588000952
 GameObject:
@@ -20500,7 +20472,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 128
+        scalar: 64
         minScalar: 30
         maxCurve:
           serializedVersion: 2
@@ -24448,7 +24420,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1509256570
 Transform:
   m_ObjectHideFlags: 0
@@ -24468,9 +24440,6 @@ Transform:
   - {fileID: 1595005562884970301}
   - {fileID: 3910862106842183313}
   - {fileID: 2016547428755500885}
-  - {fileID: 586555153}
-  - {fileID: 1697646906}
-  - {fileID: 1936177621}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1526407948
@@ -25713,12 +25682,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1697646900}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 9.95, y: 1.5, z: -0.61}
   m_LocalScale: {x: 5, y: 5, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1509256570}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1720654344
 GameObject:
@@ -27444,12 +27413,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1936177615}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -12.63, y: 1.5, z: -0.61}
   m_LocalScale: {x: 5, y: 5, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1509256570}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1942221308
 GameObject:
@@ -39144,3 +39113,6 @@ SceneRoots:
   - {fileID: 2083212140371317419}
   - {fileID: 1444410692}
   - {fileID: 1509256570}
+  - {fileID: 586555153}
+  - {fileID: 1697646906}
+  - {fileID: 1936177621}

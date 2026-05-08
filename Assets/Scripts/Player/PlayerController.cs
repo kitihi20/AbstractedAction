@@ -1,4 +1,5 @@
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,10 +10,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float dodge_movetime = 0.4f;
     [SerializeField] float attack_movetime = 0.2f;
 
-    [SerializeField] LayerMask enemyLayer;
-
-    [SerializeField] Enemy firstEnemy;
     [SerializeField] Transform lookAt2D;
+    [SerializeField] ParticleSystem deathParticle;
+
+    [SerializeField] LayerMask enemyLayer;
+    [SerializeField] Enemy firstEnemy;
+
 
     [SerializeField] PlayerInput input;
 
@@ -21,6 +24,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] PlayerAnimator animator;
     [SerializeField] PlayerGameUI gameUI;
     [SerializeField] Health health;
+
+    bool isDead;
+    float stoptime;
 
     RaycastHit hit;
     Enemy enemy;
@@ -33,15 +39,26 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        isDead = false;
+        stoptime = 1;
+
+        health.AddDelegate_Death(Death);
+
         SetEnemy(firstEnemy);
-
         gameUI.SetPlayerHealth(health);
-
         cam.SetFollower(mover.transform);
     }
 
     void Update()
     {
+        if(isDead) { return; }
+
+        if(stoptime > 0)
+        {
+            stoptime -= Time.deltaTime;
+            return;
+        }
+
         lookAt2D.position = mover.transform.position;
         if(enemytra)
         {
@@ -60,7 +77,7 @@ public class PlayerController : MonoBehaviour
             Vector3 plpos = mover.transform.position + offset;
             Vector3 right = mover.transform.right;
             Vector3 dodgePos;
-            bool res = SafePositionFinder.TryFindSafePosition(plpos, right, 0.75f, enemyLayer, out dodgePos);
+            bool res = SafePositionFinder.TryFindSafePositionAccurate(plpos, right, 0.75f, enemyLayer, out dodgePos);
             if(res)
             {
                 Debug.Log("move");
@@ -101,6 +118,29 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
+    }
+
+    void Death()
+    {
+        isDead = true;
+        StartCoroutine(DeathCoroutine());
+    }
+
+    IEnumerator DeathCoroutine()
+    {
+        deathParticle.Play();
+
+        TimeController.Instance.SetTimeScale(0.1f);
+
+        yield return new WaitForSecondsRealtime(3);
+
+        TimeController.Instance.SetTimeScale(1f);
+
+        yield return new WaitForSecondsRealtime(3);
+
+        gameUI.SetActiveGameoverUI(true);
+
+        yield break;
     }
 
     void SetEnemy(Enemy e)

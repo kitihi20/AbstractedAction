@@ -11,6 +11,9 @@ public class PlayerGameUI : MonoBehaviour
     [SerializeField] Image enemyHealth_gauge;
     [SerializeField] TextMeshProUGUI enemyHealth_Name;
 
+    [Header("Gameover")]
+    [SerializeField] GameObject gameoverObj;
+
     Health playerHealth;
     Enemy targetEnemy;
 
@@ -48,5 +51,10 @@ public class PlayerGameUI : MonoBehaviour
         targetEnemy = e;
         enemyHealth_gauge.fillAmount = (float)e.GetNowHealth() / e.GetMaxHealth();
         enemyHealth_Name.text = e.GetName();
+    }
+
+    public void SetActiveGameoverUI(bool v)
+    {
+        gameoverObj.SetActive(v);
     }
 }
