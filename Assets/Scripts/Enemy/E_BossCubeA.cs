@@ -22,6 +22,7 @@ public class E_BossCubeA : Enemy
     [SerializeField] GameObject takenoko1Prefab;
     [SerializeField] GameObject mLazerPrefab;
     [SerializeField] GameObject tsuraraPrefab;
+    [SerializeField] GameObject spikesPrefab;
 
     [SerializeField] Rigidbody[] deathObjs;
 
@@ -58,7 +59,7 @@ public class E_BossCubeA : Enemy
 
     void NextAttack()
     {
-        attackType = Random.Range(0,3);
+        attackType = Random.Range(0,4);
         switch(attackType)
         {
             case 1:
@@ -66,6 +67,9 @@ public class E_BossCubeA : Enemy
             break;
             case 2:
                 attackCount = 4;
+            break;
+            case 3:
+                attackCount = 1;
             break;
             default:
                 attackCount = 1;
@@ -86,6 +90,9 @@ public class E_BossCubeA : Enemy
             break;
             case 2:
                 Attack_Tsurara();
+            break;
+            case 3:
+                Attack_Spikes();
             break;
             default:
                 Attack_Takenoko_1();
@@ -110,6 +117,12 @@ public class E_BossCubeA : Enemy
     {
         Instantiate(tsuraraPrefab, playerPos, Quaternion.Euler(new Vector3(-90, 0, 0)));
         attacktime = 0.5f;
+    }
+
+    void Attack_Spikes()
+    {
+        Instantiate(spikesPrefab, GetPosition(), Quaternion.Euler(new Vector3(-90, 0, 0)));
+        attacktime = 7f;
     }
 
 

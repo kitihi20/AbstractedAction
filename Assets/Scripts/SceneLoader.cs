@@ -52,6 +52,7 @@ public class SceneLoader : MonoBehaviour
     {
         if (Loading) { return; }
         LoadingSceneIndex = index;
+        TimeController.Instance?.ForceReset();
         StartCoroutine(ASyncLoad());
     }
     /*public void LoadScene(string sceneName)

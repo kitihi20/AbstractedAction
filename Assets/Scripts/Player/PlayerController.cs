@@ -76,10 +76,16 @@ public class PlayerController : MonoBehaviour
             Vector3 offset = new Vector3(0,0.5f,0);
             Vector3 plpos = mover.transform.position + offset;
             Vector3 right = mover.transform.right;
+            Vector3 back = -mover.transform.forward;
             Vector3 dodgePos;
-            bool res = SafePositionFinder.TryFindSafePositionAccurate(plpos, right, 0.75f, enemyLayer, out dodgePos);
+            float dodgeDist;
+            bool res = SafePositionFinder.TryFindSafePositionAccurate(plpos, right, back, 0.75f, enemyLayer, out dodgePos, out dodgeDist);
             if(res)
             {
+                if(dodgeDist > 3f)
+                {
+                    TimeController.Instance.SetTemporaryTimeScale(0.05f, 0.6f);
+                }
                 Debug.Log("move");
                 dodgePos -= offset;
             }
